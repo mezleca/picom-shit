@@ -7,6 +7,10 @@ import re
 
 from typing import Tuple
 
+# eww keeps going inside fullscreen apps
+# so if you wanna also remove it, just set the widget name here
+eww = "bar"
+
 # those windows will be ignored
 exceptions = [
     'firefox',
@@ -88,6 +92,8 @@ class PicomManager:
     def start_picom(self):
         if not self.is_picom_running():
             try:
+                if eww:
+                    subprocess.run(['eww', 'open', eww], check=True)
                 subprocess.run(['picom', '-b'], check=True)
                 self.log("enabled picom")
             except subprocess.CalledProcessError as e:
@@ -96,6 +102,8 @@ class PicomManager:
     def kill_picom(self):
         if self.is_picom_running():
             try:
+                if eww:
+                    subprocess.run(['eww', 'close', eww], check=True)
                 subprocess.run(['killall', 'picom'], check=True)
                 self.log("killed picom")
             except subprocess.CalledProcessError as e:
@@ -121,7 +129,7 @@ class PicomManager:
             except Exception as e:
                 self.log(f"fucking error: {e}")
             
-            time.sleep(1)
+            time.sleep(0.5)
 
 if __name__ == "__main__":
     manager = PicomManager()
